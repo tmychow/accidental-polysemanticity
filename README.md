@@ -1,1 +1,1 @@
-This is an independent research project I did. More details [here](https://tmychow.com/stanford/cs199_polysemanticity/week10.html).
+See more [here](https://arxiv.org/abs/2312.03096)!
