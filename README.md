@@ -1,1 +1,1 @@
-See more [here](https://arxiv.org/abs/2312.03096)!
+See more [here](https://tmychow.com/posts/incidental_poly_0.html)!
