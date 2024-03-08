@@ -38,29 +38,7 @@ def train_all_collisions(min_m, max_m, n_instances, n_features, tied, distri, no
             polysemantic_data['curve'].append(f"l1_{lamb}")
             polysemantic_data['polysemantic_neurons'].append(count_polysemantic_neurons(model))
     print("Done with l1")
-    
-    for n_hidden in hidden_range:
-        for stdev in [0.07, 0.1, 0.15]:
-            config = Config(
-                n_features=n_features,
-                n_hidden=n_hidden,
-                n_instances=n_instances,
-                tied_weights=tied,
-                weight_distri=distri,
-                nonlinearity=nonlin,
-                noise=NoiseOptions.BERNOULLI,
-                noise_stdev=stdev
-            )
-            model = AutoEncoder(
-                config=config,
-                device=device
-            )
-            train_autoencoder(model, optimizer=torch.optim.SGD, l1=0, steps=steps, optimizer_kwargs={"lr": 0.02})
-            polysemantic_data['hidden_neurons'].append(n_hidden)
-            polysemantic_data['curve'].append(f"bernoulli_{stdev}")
-            polysemantic_data['polysemantic_neurons'].append(count_polysemantic_neurons(model))
-    print("Done with Bernoulli")
-
+    # Add noise models
     polysemantic_data = np.array(polysemantic_data)
     np.save("results/all_curves.npy", polysemantic_data)
     return polysemantic_data
@@ -79,35 +57,33 @@ def plot_all_collisions(polysemantic_data, n_features):
 
     polysemantic_neurons = dict['polysemantic_neurons']
 
+    percentiles = [50, 33, 66, 25, 75, 20, 80, 15, 85]
     data_by_type = {}
     for x, t, y in zip(hidden_neurons, curves, polysemantic_neurons):
         if t not in data_by_type:
-            data_by_type[t] = {'x': [], 'ys': [], 'ys2': [], 'ys3': [], 'ys4': [], 'ys5': []}
+            data_by_type[t] = {'x': []}
         data_by_type[t]['x'].append(x)
-        data_by_type[t]['ys'].append(np.mean(np.array(y)))
-        data_by_type[t]['ys2'].append(np.percentile(np.array(y), 25))
-        data_by_type[t]['ys3'].append(np.percentile(np.array(y), 75))
-        data_by_type[t]['ys4'].append(np.percentile(np.array(y), 10))
-        data_by_type[t]['ys5'].append(np.percentile(np.array(y), 90))
+        for percent in percentiles:
+            k = f"ys{percentiles.index(percent)}"
+            if k not in data_by_type[t]:
+                data_by_type[t][k] = []
+            data_by_type[t][k].append(np.percentile(np.array(y), percent))
 
     color_map = {
-        'l1_0.001': 'blue',
-        'l1_0.01': 'green',
-        'l1_0.1': 'red',
+        'l1_0.001': 0,
+        'l1_0.01': 3,
+        'l1_0.1': 6,
     }
 
     for t, data in data_by_type.items():
-        if t == "l1_0.001" or t == "l1_0.01" or t == "l1_0.1":
-            color = color_map.get(t, 'black')
-            plt.plot(data["x"], data["ys"], alpha=1, color=color)
-            plt.plot(data["x"], data["ys2"], alpha=0.2, color=color)
-            plt.plot(data["x"], data["ys3"], alpha=0.2, color=color)
-            plt.plot(data["x"], data["ys4"], alpha=0.2, color=color)
-            plt.plot(data["x"], data["ys5"], alpha=0.2, color=color)
+        if t == 'l1_0.001' or t == 'l1_0.01' or t == 'l1_0.1':
+            color = plt.cm.viridis(color_map[t]/7)
+            for i, percent in enumerate(percentiles):
+                plt.plot(data["x"], data[f"ys{i}"], alpha=1/(i+1), color=color, linewidth=1)
     plt.xlabel("Number of Hidden Neurons")
     plt.ylabel("Number of Polysemantic Neurons")
     plt.title(f"Polysemantic Neurons for {n_features} Features")
-    plt.savefig("results/incidental_curves.png", bbox_inches="tight")
+    plt.savefig("results/incidental_curves.png", bbox_inches="tight", dpi=300)
 
 def main(args):
     polysemantic_data = train_all_collisions(args.min_m, args.max_m, args.n_instances, args.n_features, args.tied, args.distri, args.nonlin, args.device, args.l1, args.steps, args.lr)
