@@ -26,13 +26,13 @@ def one_indexed_dataframe(matrix):
 @total_ordering
 class NoiseOptions(Enum):
     NONE = 1
-    BIPOLAR = 2
+    BERNOULLI = 2
     GAUSSIAN = 3
     def __lt__(self, other):
         return self.value < other.value
 
 def noise_to_colour(noise):
-    if noise == NoiseOptions.BIPOLAR:
+    if noise == NoiseOptions.BERNOULLI:
         return plt.cm.Reds
     elif noise == NoiseOptions.GAUSSIAN:
         return plt.cm.Blues
@@ -40,8 +40,8 @@ def noise_to_colour(noise):
         raise ValueError(f"Invalid noise option: {noise}")
 
 def noise_to_name(noise):
-    if noise == NoiseOptions.BIPOLAR:
-        return "bipolar"
+    if noise == NoiseOptions.BERNOULLI:
+        return "bernoulli"
     elif noise == NoiseOptions.GAUSSIAN:
         return "gaussian"
     else:
@@ -50,8 +50,8 @@ def noise_to_name(noise):
 def name_to_noise(name):
     if name == "none":
         return NoiseOptions.NONE
-    elif name == "bipolar":
-        return NoiseOptions.BIPOLAR
+    elif name == "bernoulli":
+        return NoiseOptions.BERNOULLI
     elif name == "gaussian":
         return NoiseOptions.GAUSSIAN
     else:

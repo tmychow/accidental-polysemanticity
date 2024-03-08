@@ -37,8 +37,6 @@ def train_collisions(min_m, max_m, n_instances, n_features, tied, distri, nonlin
 def plot_collisions(hidden_range, polysemantic_neurons, n_features):
     log_means = np.log(np.mean(polysemantic_neurons, axis=1) + 1e-5)
     log_stdevs = np.log(np.std(polysemantic_neurons, axis=1) + 1e-5)
-    log_lower = log_means - log_stdevs
-    log_upper = log_means + log_stdevs
 
     x_line = np.linspace(hidden_range[0], hidden_range[-1], 500)
     y_line = n_features**2 / (4 * x_line)
@@ -59,8 +57,6 @@ def plot_collisions(hidden_range, polysemantic_neurons, n_features):
 
 def main(args):
     hidden_range, polysemantic_neurons = train_collisions(args.min_m, args.max_m, args.n_instances, args.n_features, args.tied, args.distri, args.nonlin, args.device, args.l1, args.steps, args.lr)
-    # hidden_range = np.load("results/hidden_range.npy")
-    # polysemantic_neurons = np.load("results/polysemantic_neurons.npy")
     plot_collisions(hidden_range, polysemantic_neurons, args.n_features)
 
 if __name__ == "__main__":

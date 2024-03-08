@@ -44,7 +44,7 @@ class AutoEncoder(nn.Module):
             hidden = torch.einsum("...ibf, ifh -> ...ibh", features, self.W)
         else:
             hidden = torch.einsum("...ibf, ifh -> ...ibh", features, self.W_enc)
-        if self.config.noise == NoiseOptions.BIPOLAR:
+        if self.config.noise == NoiseOptions.BERNOULLI:
             noise = torch.randint(0, 2, (self.config.n_hidden, ), device=self.device)
             noise = noise * 2 * self.config.noise_stdev - self.config.noise_stdev
         elif self.config.noise == NoiseOptions.GAUSSIAN:

@@ -83,7 +83,7 @@ if __name__ == "__main__":
     parser.add_argument("--distri", type=str, default="normal")
     parser.add_argument("--nonlin", type=bool, default=True)
     parser.add_argument("--device", type=str, default="cpu")
-    parser.add_argument("--noise", type=list_of_strings, default=["bipolar", "gaussian"])
+    parser.add_argument("--noise", type=list_of_strings, default=["bernoulli", "gaussian"])
     parser.add_argument("--noise_stdev", type=list_of_floats, default=[0.07, 0.1, 0.15])
     parser.add_argument("--l1", type=float, default=0)
     parser.add_argument("--steps", type=int, default=100000)
